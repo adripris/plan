@@ -1,0 +1,143 @@
+
+## 1. Componentes y probabilidades básicas
+
+- Mazo principal: 72 Escenas + 24 Evidencias + 16 Especiales = 112 (reglamento: 112)
+- Cada valor de cada categoría aparece en 12 Escenas (12/112 = 10.7% por robo).
+- Evidencias: cada expediente aparece en 3 de los 6 pares → 12 Evidencias compatibles (3 por tipo). Equilibrado ✔
+- Una Escena al azar coincide con ≥1 elemento del crimen: 51.8%; con ≥2: 13.2%.
+  → Más de la mitad de las Escenas «parecen útiles»: el descarte casi siempre ofrece algo y la regla «una carta = un atributo» se pone a prueba constantemente.
+- 4 jugadores: Acusaciones repartidas 4/8; prob. de que no haya ninguna Formal en mesa: 1.4%; mazo tras el reparto: 95 cartas para 40 robos.
+- 5 jugadores: Acusaciones repartidas 5/8; prob. de que no haya ninguna Formal en mesa: 0.0%; mazo tras el reparto: 91 cartas para 50 robos.
+- 6 jugadores: Acusaciones repartidas 6/8; prob. de que no haya ninguna Formal en mesa: 0.0%; mazo tras el reparto: 87 cartas para 60 robos.
+- 7 jugadores: Acusaciones repartidas 7/8; prob. de que no haya ninguna Formal en mesa: 0.0%; mazo tras el reparto: 83 cartas para 70 robos.
+- 8 jugadores: Acusaciones repartidas 8/8; prob. de que no haya ninguna Formal en mesa: 0.0%; mazo tras el reparto: 79 cartas para 80 robos.
+- Cartas de Crimen: 32 prediseñadas, pero el dossier vende «1.296 combinaciones». Son 32 casos jugables (2.5% del espacio).
+- Suministro máximo simultáneo: Cómplice 6 · Testigo 5 · Declaración 5 → como mucho 5 jugadores pueden ser Detective o Testigo a la vez, y cada Declaración usada como ataque reduce ese techo.
+
+## 2. Ventaja por asiento (orden de turno, asiento 1 = jugador inicial)
+
+- V1.0 4j supervivencia por asiento:   58%   56%   57%   54%   (diferencia máx 5 pts)
+- V1.0 6j supervivencia por asiento:   56%   57%   57%   54%   53%   54%   (diferencia máx 4 pts)
+- V1.0 8j supervivencia por asiento:   58%   57%   57%   55%   54%   54%   52%   51%   (diferencia máx 8 pts)
+- V1.1 4j supervivencia por asiento:   63%   66%   68%   70%   (diferencia máx 7 pts)
+- V1.1 6j supervivencia por asiento:   63%   64%   65%   66%   67%   68%   (diferencia máx 5 pts)
+- V1.1 8j supervivencia por asiento:   65%   64%   65%   64%   67%   65%   65%   67%   (diferencia máx 3 pts)
+
+## 3. Estrategias dominantes / explotables
+
+Jugador 0 = perfil calculador con estrategia fija; resto de la mesa mixta. Δ = diferencia frente a 'control'.
+
+### V1.0 — 4 jugadores
+
+| Estrategia | Sobrevive | Δ | Puntos | Δ |
+|---|---|---|---|---|
+| juega normal (referencia) |  61.6% | +0.0 | 2.71 | +0.00 |
+| solo persigue Asesino |  55.0% | -6.6 | 2.60 | -0.12 |
+| solo persigue Cómplice |  64.0% | +2.5 | 2.14 | -0.57 |
+| solo persigue Testigo |  52.8% | -8.7 | 2.15 | -0.56 |
+| solo persigue Detective |  45.3% | -16.2 | 2.18 | -0.54 |
+| nunca juega especiales (los guarda) |  63.2% | +1.6 | 2.74 | +0.02 |
+| juega cada especial en cuanto lo roba |  54.8% | -6.8 | 2.56 | -0.15 |
+| nunca suelta cartas del crimen (negar al rival) |  61.0% | -0.6 | 2.68 | -0.03 |
+| se revela en cuanto puede |  67.8% | +6.2 | 3.00 | +0.29 |
+| nunca se revela (espera a la Forzada) |  51.3% | -10.3 | 2.24 | -0.48 |
+| nunca acusa |  58.1% | -3.4 | 2.64 | -0.07 |
+| acusa siempre en Sospecha |  57.3% | -4.2 | 2.40 | -0.32 |
+
+### V1.0 — 6 jugadores
+
+| Estrategia | Sobrevive | Δ | Puntos | Δ |
+|---|---|---|---|---|
+| juega normal (referencia) |  62.7% | +0.0 | 2.75 | +0.00 |
+| solo persigue Asesino |  55.9% | -6.8 | 2.62 | -0.13 |
+| solo persigue Cómplice |  64.8% | +2.1 | 2.18 | -0.57 |
+| solo persigue Testigo |  52.6% | -10.1 | 2.13 | -0.62 |
+| solo persigue Detective |  45.5% | -17.3 | 2.13 | -0.62 |
+| nunca juega especiales (los guarda) |  65.0% | +2.3 | 2.83 | +0.08 |
+| juega cada especial en cuanto lo roba |  54.2% | -8.5 | 2.53 | -0.23 |
+| nunca suelta cartas del crimen (negar al rival) |  61.3% | -1.5 | 2.70 | -0.05 |
+| se revela en cuanto puede |  68.3% | +5.6 | 3.01 | +0.26 |
+| nunca se revela (espera a la Forzada) |  52.6% | -10.2 | 2.29 | -0.47 |
+| nunca acusa |  56.7% | -6.0 | 2.57 | -0.18 |
+| acusa siempre en Sospecha |  57.8% | -4.9 | 2.44 | -0.32 |
+
+### V1.1 — 4 jugadores
+
+| Estrategia | Sobrevive | Δ | Puntos | Δ |
+|---|---|---|---|---|
+| juega normal (referencia) |  72.4% | +0.0 | 4.16 | +0.00 |
+| solo persigue Asesino |  61.1% | -11.4 | 3.56 | -0.60 |
+| solo persigue Cómplice |  72.5% | +0.1 | 3.14 | -1.03 |
+| solo persigue Testigo |  66.3% | -6.1 | 3.38 | -0.79 |
+| solo persigue Detective |  67.8% | -4.6 | 4.66 | +0.49 |
+| nunca juega especiales (los guarda) |  73.6% | +1.1 | 4.14 | -0.02 |
+| juega cada especial en cuanto lo roba |  60.3% | -12.1 | 3.47 | -0.69 |
+| nunca suelta cartas del crimen (negar al rival) |  70.0% | -2.4 | 3.98 | -0.18 |
+| se revela en cuanto puede |  80.8% | +8.4 | 3.77 | -0.39 |
+| nunca se revela (espera a la Forzada) |  68.2% | -4.2 | 4.47 | +0.31 |
+| nunca acusa |  68.7% | -3.7 | 4.04 | -0.13 |
+| acusa siempre en Sospecha |  60.5% | -12.0 | 3.47 | -0.69 |
+
+### V1.1 — 6 jugadores
+
+| Estrategia | Sobrevive | Δ | Puntos | Δ |
+|---|---|---|---|---|
+| juega normal (referencia) |  71.9% | +0.0 | 4.15 | +0.00 |
+| solo persigue Asesino |  61.3% | -10.6 | 3.60 | -0.55 |
+| solo persigue Cómplice |  73.3% | +1.4 | 3.20 | -0.95 |
+| solo persigue Testigo |  70.4% | -1.5 | 3.60 | -0.55 |
+| solo persigue Detective |  68.6% | -3.3 | 4.70 | +0.55 |
+| nunca juega especiales (los guarda) |  73.5% | +1.6 | 4.09 | -0.06 |
+| juega cada especial en cuanto lo roba |  63.1% | -8.8 | 3.66 | -0.49 |
+| nunca suelta cartas del crimen (negar al rival) |  69.5% | -2.4 | 3.94 | -0.21 |
+| se revela en cuanto puede |  80.8% | +8.8 | 3.79 | -0.36 |
+| nunca se revela (espera a la Forzada) |  67.5% | -4.4 | 4.40 | +0.26 |
+| nunca acusa |  66.9% | -5.0 | 3.94 | -0.21 |
+| acusa siempre en Sospecha |  63.0% | -8.9 | 3.67 | -0.48 |
+
+
+## 4. Puntuación
+
+### V1.0 — 6 jugadores
+
+| Resultado | Frecuencia | Puntos medios (con bonus) | Puntos base |
+|---|---|---|---|
+| detective |   0.9% | 6.01 | 6 |
+| asesino |  30.8% | 5.09 | 5 |
+| testigo |   3.5% | 4.07 | 4 |
+| complice |  13.2% | 3.09 | 3 |
+| cazador |   6.8% | 4.00 | 2 |
+| bloqueado |   9.6% | 0.00 | 0 |
+| nadie |  35.2% | -0.36 | 0 |
+
+- Acusación formal: acierto 43% → valor esperado en puntos +0.28 por acusación (sin contar Cazador ni el daño a la mano).
+
+- Acusación complice: acierto 37% → valor esperado en puntos -0.26 por acusación (sin contar Cazador ni el daño a la mano).
+
+### V1.1 — 6 jugadores
+
+| Resultado | Frecuencia | Puntos medios (con bonus) | Puntos base |
+|---|---|---|---|
+| detective |   7.1% | 7.40 | 6 |
+| asesino |  32.3% | 6.22 | 5 |
+| testigo |   6.3% | 5.18 | 4 |
+| complice |  13.9% | 3.99 | 3 |
+| cazador |   5.8% | 4.00 | 2 |
+| bloqueado |  11.5% | 0.00 | 0 |
+| nadie |  23.2% | -0.23 | 0 |
+
+- Acusación formal: acierto 53% → valor esperado en puntos +0.59 por acusación (sin contar Cazador ni el daño a la mano).
+
+- Acusación complice: acierto 44% → valor esperado en puntos -0.11 por acusación (sin contar Cazador ni el daño a la mano).
+
+
+## 5. Robustez del simulador (¿cambian las conclusiones?)
+
+| Supuesto humano | V1.0 4j | V1.1 4j | V1.0 8j | V1.1 8j | Det+Tes V1.0→V1.1 (6j) |
+|---|---|---|---|---|---|
+| base | 1.74 | 1.31 | 3.65 | 2.79 | 4.5% → 13.1% |
+| más hábiles (+0.25) | 1.72 | 1.24 | 3.69 | 2.69 | 4.4% → 14.0% |
+| menos hábiles (−0.25) | 1.89 | 1.50 | 3.93 | 3.10 | 4.3% → 12.6% |
+| sin lectura de mesa | 1.70 | 1.31 | 3.57 | 2.71 | 4.9% → 13.2% |
+| peor memoria (−0.3) | 1.71 | 1.31 | 3.68 | 2.69 | 4.3% → 12.7% |
+| sin errores de regla | 1.69 | 1.22 | 3.51 | 2.60 | 4.6% → 13.5% |

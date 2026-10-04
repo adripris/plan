@@ -24,6 +24,15 @@ Para añadir una variante, añade una entrada a `VARIANTES` con los parámetros 
 - Identidades y acusaciones: `det_tipos`, `contra`, `fallo_formal`.
 - Puntuación: `revelar_temprano_bonus`.
 
+## Auditoría
+
+```bash
+python3 auditoria.py                 # componentes, asientos, estrategias, puntuación y robustez
+python3 auditoria.py --solo estrategias --partidas 2000
+```
+
+Resultados en `resultados/auditoria.txt` y conclusiones en `../AUDITORIA.md`.
+
 ## Cómo juegan los "humanos"
 
 Cada jugador recibe un perfil: novato, casual, calculador, agresivo, prudente, farsante,

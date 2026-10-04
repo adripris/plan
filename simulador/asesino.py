@@ -290,6 +290,8 @@ class Jugador:
         self.ruido = (1 - self.p['habilidad']) * 0.12
         self._outs = {}
         self.w = {i: 1 + self.p['codicia'] * (PUNTOS[i] - 4.5) / 12 for i in IDENTIDADES}
+        self.estr = None            # estrategia fija (auditoría de estrategias dominantes)
+        self.asiento = None
 
     # ---------- conocimiento ----------
     def ver(self, c):
@@ -353,8 +355,9 @@ class Jugador:
         v = best + 0.25 * second + 0.01 * cerca
         if self.p['farol'] > 0 and best_id != 'asesino' and g.ronda >= 5:
             v += self.p['farol'] * 0.02 * sum(1 for m in masks if m & 15)
+        regalo = 0.25 if self.estr == 'acaparador' else self.p['habilidad'] * 0.015
         for c in descartadas:            # no regalar cartas del crimen al siguiente
-            v -= self.p['habilidad'] * 0.015 * popcount(g.mask[c] & 15)
+            v -= regalo * popcount(g.mask[c] & 15)
         return v, best_id
 
     def mejor_mano(self, cartas, D, g, ruido=True):
@@ -579,7 +582,7 @@ class Partida:
     # ---------- especiales ----------
     def especial(self, j, D):
         esp = [c for c in j.mano if self.kind(c) in ESPECIALES]
-        if not esp:
+        if not esp or j.estr == 'sin_especiales':
             return False
         objetivos = self.activos(excepto=j)
         if not objetivos:
@@ -597,7 +600,7 @@ class Partida:
                 efecto = 0.02 + (0.06 if j.acusacion in ('formal', 'complice') and self.ronda >= 6 else 0)
             else:
                 efecto = 0.03 + 0.03 * agr
-            if enfadado or v_use + efecto + j.rng.gauss(0, j.ruido) >= v_keep:
+            if enfadado or j.estr == 'especiales_siempre' or v_use + efecto + j.rng.gauss(0, j.ruido) >= v_keep:
                 return self.jugar_especial(j, c, objetivos, D)
         return False
 
@@ -693,11 +696,15 @@ class Partida:
                 p_rev *= 0.5
             if ultima:
                 p_rev *= 0.6   # en la última ronda ya casi da igual
+            if j.estr == 'revela_ya':
+                p_rev = 1.0
+            elif j.estr == 'nunca_revela':
+                p_rev = 0.0
             if j.rng.random() < p_rev:
                 return self.revelar(j, D)
             j.decision_tensa = True
         # --- ACUSAR ---
-        if j.acusacion in ('formal', 'complice'):
+        if j.acusacion in ('formal', 'complice') and j.estr != 'nunca_acusa':
             return self.quizas_acusar(j, D, tengo=cree is not None)
         return False
 
@@ -731,7 +738,7 @@ class Partida:
         ident = 'asesino' if j.acusacion == 'formal' else 'complice'
         probs = [(j.prob_identidad(o, ident, self), o) for o in candidatos]
         P, t = max(probs, key=lambda x: x[0])
-        mi_v, _ = j.valor(j.mano[:4], D, self)
+        mi_v, _, _, _ = j.mejor_mano(j.mano, D, self, ruido=False)
         mi_surv = 1.0 if tengo else min(1.0, mi_v)
         ultima = self.ronda == self.R['construccion'] + self.R['sospecha']
         if j.acusacion == 'formal':
@@ -744,7 +751,7 @@ class Partida:
         umbral = 0.05 + 0.25 * (1 - j.p['riesgo']) + j.rng.gauss(0, 0.05)
         if abs(ev - umbral) < 0.12:
             j.decision_tensa = True
-        if ev < umbral:
+        if ev < umbral and j.estr != 'acusa_siempre':
             return False
         self.acusar(j, t, j.acusacion, D)
         return True
@@ -846,6 +853,8 @@ class Partida:
         orden = self.jug[:]
         k = self.rng.randrange(len(orden))
         orden = orden[k:] + orden[:k]
+        for i, j in enumerate(orden):
+            j.asiento = i
         crimen_txt = (f"asesino {self.crimen[0]}, arma {self.crimen[1]}, víctima {self.crimen[2]}, "
                       f"lugar {self.crimen[3]}, expediente {EXPEDIENTES[self.crimen[4]]}")
         self.say(f"CRIMEN: {crimen_txt}")
@@ -890,9 +899,19 @@ class Partida:
 # MÉTRICAS DE UNA PARTIDA
 # ============================================================
 def jugar_partida(args):
-    R, n, seed, mesa = args
+    R, n, seed, mesa = args[:4]
+    estr = args[4] if len(args) > 4 else None     # (estrategia, perfil) para el jugador 0
     rng = random.Random(seed)
     g = Partida(R, n, rng, mesa)
+    if estr:
+        j0 = g.jug[0]
+        j0.perfil, j0.p = estr[1], PERFILES[estr[1]]
+        j0.ruido = (1 - j0.p['habilidad']) * 0.12
+        j0.malentiende = False
+        j0.estr = estr[0]
+        j0.w = {i: 1 + j0.p['codicia'] * (PUNTOS[i] - 4.5) / 12 for i in IDENTIDADES}
+        if estr[0].startswith('solo_'):
+            j0.w = {i: (1.0 if i == estr[0][5:] else 0.0) for i in IDENTIDADES}
     res = g.jugar()
     tam = R['mano']
     filas = []
@@ -907,7 +926,7 @@ def jugar_partida(args):
             else:
                 faltan = faltan_min(tuple(sorted(masks))) + (tam - len(masks))
         pts = 0 if ident == 'bloqueado' else PUNTOS[ident] + j.bonus
-        filas.append(dict(perfil=j.perfil, ident=ident, sobrevive=sobrevive, faltan=faltan,
+        filas.append(dict(id=j.id, asiento=j.asiento, revelo=j.revelo_ronda, perfil=j.perfil, ident=ident, sobrevive=sobrevive, faltan=faltan,
                           cambios=j.cambios, tensa=j.decision_tensa, perdio=j.perdio_identidad,
                           inicio=g.inicio[j.id], puntos=pts, malentiende=j.malentiende))
     return dict(filas=filas, ev=dict(g.ev), tiempo=g.tiempo)
