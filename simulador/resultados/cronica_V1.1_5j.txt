@@ -1,0 +1,123 @@
+CRIMEN: asesino 2, arma 1, víctima 3, lugar 5, expediente ●
+Mesa: J0=farsante[formal], J1=observador[complice], J2=observador[contra], J3=calculador[formal], J4=prudente[formal]
+
+— Ronda 1 (CONSTRUCCIÓN) —
+  J0 (farsante) toma del descarte Escena[✓···]
+  J0 juega Cómplice sobre J1: le roba Escena[····] y le da Prueba ●■
+  J1 (observador) toma del descarte Cómplice
+    descarta Escena[····]
+  J2 (observador) roba del mazo
+    descarta Escena[···✓]
+  J3 (calculador) toma del descarte Escena[···✓]
+    descarta Escena[····]
+  J4 (prudente) roba del mazo
+  J4 juega Declaración (lugar) sobre J3: descarta Escena[···✓]
+
+— Ronda 2 (CONSTRUCCIÓN) —
+  J0 (farsante) toma del descarte Escena[···✓]
+    descarta Escena[····]
+  J1 (observador) roba del mazo
+    descarta Prueba ●■
+  J2 (observador) roba del mazo
+    descarta Huella ▲■
+  J3 (calculador) roba del mazo
+  J4 (prudente) roba del mazo
+    descarta Escena[····]
+
+— Ronda 3 (CONSTRUCCIÓN) —
+  J0 (farsante) roba del mazo
+    descarta Escena[··✓✓]
+  J1 (observador) toma del descarte Escena[··✓✓]
+    descarta Escena[····]
+  J2 (observador) roba del mazo
+    descarta Motivo ▲■
+  J3 (calculador) roba del mazo
+    descarta Huella ▲★
+  J4 (prudente) roba del mazo
+    descarta Prueba ■★
+
+— Ronda 4 (CONSTRUCCIÓN) —
+  J0 (farsante) roba del mazo
+    descarta Escena[✓···]
+  J1 (observador) toma del descarte Prueba ■★
+    descarta Prueba ■★
+  J2 (observador) toma del descarte Escena[✓···]
+    descarta Motivo ●▲
+  J3 (calculador) roba del mazo
+    descarta Escena[····]
+  J4 (prudente) roba del mazo
+    descarta Escena[····]
+
+— Ronda 5 (CONSTRUCCIÓN) —
+  J0 (farsante) roba del mazo
+    descarta Motivo ●■
+  J1 (observador) roba del mazo
+  J1 juega Declaración (asesino) sobre J2: descarta Escena[✓···]
+  J2 (observador) toma del descarte Escena[✓···]
+  J3 (calculador) roba del mazo
+    descarta Coartada ■★
+  J4 (prudente) roba del mazo
+    descarta Motivo ■★
+
+— Ronda 6 (CONSTRUCCIÓN) —
+  J0 (farsante) roba del mazo
+    descarta Escena[··✓·]
+  J1 (observador) roba del mazo
+    descarta Escena[····]
+  J2 (observador) roba del mazo
+    descarta Escena[···✓]
+  J3 (calculador) toma del descarte Escena[···✓]
+    descarta Prueba ●★
+  J4 (prudente) roba del mazo
+  J4 juega Testigo y mira la mano de J1
+
+— Ronda 7 (CONSTRUCCIÓN) —
+  J0 (farsante) roba del mazo
+    descarta Escena[···✓]
+  J1 (observador) roba del mazo
+  J1 juega Cómplice sobre J2: le roba Escena[···✓] y le da Escena[···✓]
+  J2 (observador) roba del mazo
+    descarta Prueba ●▲
+  J3 (calculador) roba del mazo
+    descarta Escena[····]
+  J4 (prudente) roba del mazo
+    descarta Escena[·✓··]
+
+— Ronda 8 (CONSTRUCCIÓN) —
+  J0 (farsante) toma del descarte Escena[·✓··]
+  J0 juega Cómplice sobre J2: le roba Cómplice y le da Escena[··✓·]
+  J1 (observador) roba del mazo
+    descarta Escena[✓··✓]
+  J2 (observador) roba del mazo
+    descarta Escena[··✓·]
+  J3 (calculador) roba del mazo
+    descarta Escena[····]
+  J4 (prudente) toma del descarte Escena[··✓·]
+    descarta Escena[····]
+
+— Ronda 9 (SOSPECHA) —
+  J0 (farsante) roba del mazo
+  J0 juega Cómplice sobre J2: le roba Escena[✓···] y le da Escena[✓···]
+  J1 (observador) roba del mazo
+    descarta Escena[✓···]
+  J2 (observador) toma del descarte Cómplice
+  J2 juega Cómplice sobre J0: le roba Escena[·✓··] y le da Escena[·✓··]
+  J3 (calculador) roba del mazo
+    descarta Prueba ▲■
+  J4 (prudente) roba del mazo
+  J4 (prudente) ACUSA Formal a J0: ¡ACIERTA! J0 queda BLOQUEADO
+
+— Ronda 10 (SOSPECHA) —
+  J0 (farsante) toma del descarte Escena[···✓]
+  J1 (observador) roba del mazo
+    descarta Escena[··✓·]
+  J2 (observador) roba del mazo
+    descarta Escena[··✓·]
+  J3 (calculador) toma del descarte Escena[··✓·]
+  J3 juega Cómplice sobre J4: le roba Escena[···✓] y le da Escena[···✓]
+  J4 (prudente) roba del mazo
+    descarta Escena[····]
+    descarta Huella ■★
+    descarta Escena[····]
+
+REVELACIÓN FORZADA: J0(farsante)=bloqueado, J1(observador)=nadie, J2(observador)=asesino, J3(calculador)=asesino, J4(prudente)=cazador

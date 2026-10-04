@@ -1,0 +1,90 @@
+
+========================================================================
+V1.0 — 4 jugadores — 3000 partidas
+========================================================================
+  Identidad final:
+    asesino      32.0%
+    detective     1.2%
+    complice     13.9%
+    testigo       3.9%
+    cazador       5.7%
+    bloqueado     8.2%
+    nadie        35.3%
+  Nadie por partida: 1.74   (todos Nadie: 3.1%)
+  Reparto de nº de perdedores: 0:11%, 1:30%, 2:37%, 3:19%, 4:3%
+  Revelaciones/partida 1.41 · falsas 0.06 · tomas del descarte 6.8 · especiales 6.0 · identidades destruidas 0.88
+  Acusaciones/partida 0.80 · acierto Formal 41% · acierto Cómplice 41% · Contra usada 0.12
+  Supervivencia por perfil: calculador 64%, observador 64%, prudente 62%, farsante 58%, casual 57%, agresivo 51%, codicioso 51%, novato 47%
+
+  ¿ENGANCHA?
+    ❌ Nadie por partida                             1.74   objetivo 0.6–1.4
+    ❌ Nadie a 1 carta («me faltó una»)               39%   objetivo ≥ 60%
+    ❌ Cambios de objetivo / jugador                 0.55   objetivo ≥ 0.8
+    ✅ Jugadores con decisión tensa en 9–10           38%   objetivo ≥ 30%
+    ❌ Variedad de identidades (entropía)            0.67   objetivo ≥ 0.75
+    ❌ Acusaciones / partida                         0.80   objetivo ≥ 1.0
+    ✅ Acierto Acusación Formal                       41%   objetivo 30–70%
+    ✅ Partidas con Cazador                           22%   objetivo 10–40%
+    ✅ Peso de la mano inicial                    +11 pts   objetivo ≤ +20
+    ✅ Duración estimada                           19 min   objetivo 20–30
+    → 5/10 indicadores en objetivo
+
+========================================================================
+V1.0 — 6 jugadores — 3000 partidas
+========================================================================
+  Identidad final:
+    asesino      30.1%
+    detective     1.0%
+    complice     13.3%
+    testigo       3.5%
+    cazador       6.9%
+    bloqueado     9.6%
+    nadie        35.6%
+  Nadie por partida: 2.71   (todos Nadie: 0.5%)
+  Reparto de nº de perdedores: 0:2%, 1:12%, 2:29%, 3:34%, 4:19%, 5:4%, 6:0%
+  Revelaciones/partida 2.02 · falsas 0.08 · tomas del descarte 10.1 · especiales 9.2 · identidades destruidas 1.49
+  Acusaciones/partida 1.39 · acierto Formal 42% · acierto Cómplice 36% · Contra usada 0.21
+  Supervivencia por perfil: observador 64%, prudente 63%, calculador 60%, farsante 58%, casual 56%, codicioso 48%, agresivo 47%, novato 43%
+
+  ¿ENGANCHA?
+    ❌ Nadie por partida                             2.71   objetivo 1.3–2.2
+    ❌ Nadie a 1 carta («me faltó una»)               37%   objetivo ≥ 60%
+    ❌ Cambios de objetivo / jugador                 0.54   objetivo ≥ 0.8
+    ✅ Jugadores con decisión tensa en 9–10           37%   objetivo ≥ 30%
+    ❌ Variedad de identidades (entropía)            0.66   objetivo ≥ 0.75
+    ✅ Acusaciones / partida                         1.39   objetivo ≥ 1.0
+    ✅ Acierto Acusación Formal                       42%   objetivo 30–70%
+    ✅ Partidas con Cazador                           38%   objetivo 10–40%
+    ✅ Peso de la mano inicial                     +7 pts   objetivo ≤ +20
+    ✅ Duración estimada                           29 min   objetivo 20–30
+    → 6/10 indicadores en objetivo
+
+========================================================================
+V1.0 — 8 jugadores — 3000 partidas
+========================================================================
+  Identidad final:
+    asesino      29.2%
+    detective     0.8%
+    complice     13.4%
+    testigo       3.4%
+    cazador       7.5%
+    bloqueado    10.4%
+    nadie        35.2%
+  Nadie por partida: 3.65   (todos Nadie: 0.0%)
+  Reparto de nº de perdedores: 0:0%, 1:3%, 2:13%, 3:28%, 4:33%, 5:16%, 6:6%, 7:1%, 8:0%
+  Revelaciones/partida 2.59 · falsas 0.11 · tomas del descarte 13.2 · especiales 12.3 · identidades destruidas 2.10
+  Acusaciones/partida 1.94 · acierto Formal 43% · acierto Cómplice 32% · Contra usada 0.27
+  Supervivencia por perfil: observador 64%, prudente 63%, calculador 62%, farsante 59%, casual 53%, agresivo 47%, codicioso 45%, novato 42%
+
+  ¿ENGANCHA?
+    ❌ Nadie por partida                             3.65   objetivo 2.0–3.0
+    ❌ Nadie a 1 carta («me faltó una»)               37%   objetivo ≥ 60%
+    ❌ Cambios de objetivo / jugador                 0.53   objetivo ≥ 0.8
+    ✅ Jugadores con decisión tensa en 9–10           36%   objetivo ≥ 30%
+    ❌ Variedad de identidades (entropía)            0.66   objetivo ≥ 0.75
+    ✅ Acusaciones / partida                         1.94   objetivo ≥ 1.0
+    ✅ Acierto Acusación Formal                       43%   objetivo 30–70%
+    ❌ Partidas con Cazador                           52%   objetivo 10–40%
+    ✅ Peso de la mano inicial                     +8 pts   objetivo ≤ +20
+    ❌ Duración estimada                           39 min   objetivo 20–30
+    → 4/10 indicadores en objetivo
