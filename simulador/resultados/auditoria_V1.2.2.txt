@@ -1,0 +1,35 @@
+
+## 2. Ventaja por asiento (orden de turno, asiento 1 = jugador inicial)
+
+- V1.2.2 4j supervivencia por asiento:   86%   86%   86%   86%   (diferencia máx 1 pts)
+- V1.2.2 6j supervivencia por asiento:   84%   84%   85%   85%   86%   85%   (diferencia máx 2 pts)
+- V1.2.2 8j supervivencia por asiento:   84%   84%   85%   84%   84%   84%   84%   84%   (diferencia máx 1 pts)
+
+## 3. Estrategias dominantes / explotables
+
+Jugador 0 = perfil calculador con estrategia fija; resto de la mesa mixta. Δ = diferencia frente a 'control'.
+
+### V1.2.2 — 4 jugadores
+
+| Estrategia | Sobrevive | Δ | Puntos | Δ |
+|---|---|---|---|---|
+| juega normal (referencia) |  91.0% | +0.0 | 3.74 | +0.00 |
+| solo persigue Asesino |  67.3% | -23.7 | 3.32 | -0.41 |
+| solo persigue Cómplice |  81.6% | -9.3 | 2.71 | -1.03 |
+| solo persigue Testigo |  75.2% | -15.7 | 3.16 | -0.58 |
+| solo persigue Detective |  56.0% | -35.0 | 3.25 | -0.49 |
+| nunca juega especiales (los guarda) |  91.4% | +0.4 | 3.65 | -0.08 |
+| juega cada especial en cuanto lo roba |  69.2% | -21.7 | 3.31 | -0.43 |
+| nunca suelta cartas del crimen (negar al rival) |  89.0% | -1.9 | 3.83 | +0.10 |
+| se revela en cuanto puede |  92.5% | +1.5 | 3.76 | +0.03 |
+| nunca se revela (espera a la Forzada) |  87.4% | -3.6 | 3.65 | -0.09 |
+| nunca acusa |  90.2% | -0.8 | 3.71 | -0.03 |
+| acusa siempre en Sospecha |  79.2% | -11.7 | 3.20 | -0.54 |
+| nunca usa Reconversión |  89.7% | -1.3 | 3.68 | -0.05 |
+| reconvierte en la ronda 9 si no tiene identidad |  90.6% | -0.4 | 3.71 | -0.02 |
+
+### V1.2.2 — 6 jugadores
+
+| Estrategia | Sobrevive | Δ | Puntos | Δ |
+|---|---|---|---|---|
+| juega normal (referencia) |  89.9% | +0.0 | 3.68 | +0.00 |

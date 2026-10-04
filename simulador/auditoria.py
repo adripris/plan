@@ -67,9 +67,12 @@ def estaticas():
 
 
 # ------------------------------------------------------------------
+VARS = ['V1.0', 'V1.1']
+
+
 def asientos(partidas):
     print("\n## 2. Ventaja por asiento (orden de turno, asiento 1 = jugador inicial)\n")
-    for v in ('V1.0', 'V1.1'):
+    for v in VARS:
         R = A.reglas(v)
         for n in (4, 6, 8):
             out = correr(R, n, partidas)
@@ -100,20 +103,25 @@ ESTRATEGIAS = [
     ('nunca_acusa', 'nunca acusa'),
     ('acusa_siempre', 'acusa siempre en Sospecha'),
 ]
+ESTRATEGIAS_V12 = [
+    ('nunca_reconvierte', 'nunca usa Reconversión'),
+    ('reconvierte_ya', 'reconvierte en la ronda 9 si no tiene identidad'),
+]
 
 
 def estrategias(partidas):
     print("\n## 3. Estrategias dominantes / explotables\n")
     print("Jugador 0 = perfil calculador con estrategia fija; resto de la mesa mixta. "
           "Δ = diferencia frente a 'control'.\n")
-    for v in ('V1.0', 'V1.1'):
+    for v in VARS:
         R = A.reglas(v)
+        lista = ESTRATEGIAS + (ESTRATEGIAS_V12 if R['v12'] else [])
         for n in (4, 6):
             print(f"### {v} — {n} jugadores\n")
             print("| Estrategia | Sobrevive | Δ | Puntos | Δ |")
             print("|---|---|---|---|---|")
             base = None
-            for e, desc in ESTRATEGIAS:
+            for e, desc in lista:
                 out = correr(R, n, partidas, estr=(e, 'calculador'))
                 f0 = [next(f for f in o['filas'] if f['id'] == 0) for o in out]
                 s = statistics.mean(f['sobrevive'] for f in f0)
@@ -127,8 +135,11 @@ def estrategias(partidas):
 # ------------------------------------------------------------------
 def puntuacion(partidas):
     print("\n## 4. Puntuación\n")
-    for v in ('V1.0', 'V1.1'):
+    for v in VARS:
         R = A.reglas(v)
+        if R['v12']:
+            print(f"### {v}: Modo Normal sin puntos (§18) — no aplica.\n")
+            continue
         out = correr(R, 6, partidas)
         por = defaultdict(list)
         frec = Counter()
@@ -194,16 +205,53 @@ def robustez(partidas):
         d.update(original[p])
 
 
+def robustez_v12(partidas):
+    print("\n## 5b. Robustez de V1.2.2 (Nadie y Cómplice con distintos supuestos humanos)\n")
+    print("| Supuesto humano | Nadie 4j | Nadie 8j | Cómplice 6j | Acusaciones 6j |")
+    print("|---|---|---|---|---|")
+    original = copy.deepcopy(A.PERFILES)
+    casos = list(AJUSTES.items()) + [('Cazador vale 0 (solo orgullo)', 'caz0'),
+                                     ('Cazador vale mucho (1.0)', 'caz1')]
+    for nombre, aj in casos:
+        R = A.reglas('V1.2.2')
+        for p, d in A.PERFILES.items():
+            d.clear()
+            d.update(original[p])
+            if isinstance(aj, dict):
+                for k, delta in aj.items():
+                    d[k] = 0.0 if delta == 'x0' else min(1.0, max(0.0, d[k] + delta))
+        if aj == 'caz0':
+            R['valor_cazador'] = 0.0
+        if aj == 'caz1':
+            R['valor_cazador'] = 1.0
+        nad = []
+        for n in (4, 8):
+            out = correr(R, n, partidas)
+            nad.append(statistics.mean(sum(not f['sobrevive'] for f in o['filas']) for o in out))
+        out = correr(R, 6, partidas)
+        fl = [f for o in out for f in o['filas']]
+        comp = sum(f['ident'] == 'complice' for f in fl) / len(fl)
+        acus = sum(o['ev'].get('acusa_formal', 0) + o['ev'].get('acusa_complice', 0) for o in out) / len(out)
+        print(f"| {nombre} | {nad[0]:.2f} | {nad[1]:.2f} | {comp * 100:.1f}% | {acus:.2f} |", flush=True)
+    for p, d in A.PERFILES.items():
+        d.clear()
+        d.update(original[p])
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--partidas', type=int, default=3000)
-    ap.add_argument('--solo', choices=['estaticas', 'asientos', 'estrategias', 'puntuacion', 'robustez'])
+    ap.add_argument('--solo', choices=['estaticas', 'asientos', 'estrategias', 'puntuacion', 'robustez',
+                                       'robustez_v12'])
+    ap.add_argument('--variantes', default='V1.0,V1.1', help='lista separada por comas')
     a = ap.parse_args()
+    VARS[:] = a.variantes.split(',')
     pasos = dict(estaticas=lambda: estaticas(), asientos=lambda: asientos(a.partidas),
                  estrategias=lambda: estrategias(a.partidas), puntuacion=lambda: puntuacion(a.partidas),
-                 robustez=lambda: robustez(a.partidas // 2))
+                 robustez=lambda: robustez(a.partidas // 2),
+                 robustez_v12=lambda: robustez_v12(a.partidas // 2))
     for k, f in pasos.items():
-        if a.solo in (None, k):
+        if a.solo == k or (a.solo is None and k != 'robustez_v12'):
             f()
 
 

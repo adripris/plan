@@ -88,6 +88,13 @@ REGLAS_V10 = dict(
     revelar_temprano_bonus=0,   # puntos extra si sobrevives sin revelarte
     det_tipos=3,                # tipos distintos de Evidencia que exige Detective
     draft=0,                    # cartas extra en el reparto inicial (luego te quedas 'mano')
+    v12=False,                  # identidades, acusaciones y final del Reglamento V1.2.2
+    reconversion=False,         # V1.2.2 §11: una vez, rondas 9–10
+    valor_cazador=0.35,         # cuánto valora un humano el reconocimiento Cazador (0–1)
+    contra_si_culpable=0.6,     # prob. de jugar Contra-acusación aunque la acusación sea cierta
+    complice_def='v12',         # 'v12' | 'con_asesino' | 'tres'
+    testigo_def='v12',          # 'v12' | 'con_decl'
+    cazador_salva=False,        # V1.2.2: Cazador NO da supervivencia
 )
 
 VARIANTES = {
@@ -118,6 +125,26 @@ VARIANTES = {
     'mercado2+contra': dict(nombre='Mercado 2 + Contra',
                             descripcion='Mercado de 2 + Contra-acusación que bloquea',
                             mercado=2, contra='bloquea'),
+    'V1.2.2': dict(nombre='V1.2.2', descripcion='Reglamento consolidado V1.2.2 (Modo Normal)',
+                   v12=True, reconversion=True),
+    'V1.2.2-sinRec': dict(nombre='V1.2.2 sin Reconv.', descripcion='V1.2.2 sin Reconversión',
+                          v12=True, reconversion=False),
+    'V1.2.2+CómpAses': dict(nombre='V1.2.2 Cómplice c/Asesino',
+                            descripcion='Cómplice: sus 2 Escenas deben incluir el Asesino',
+                            v12=True, reconversion=True, complice_def='con_asesino'),
+    'V1.2.2+Cómp3': dict(nombre='V1.2.2 Cómplice 3 atrib.',
+                         descripcion='Cómplice: Cómplice + Asesino + Arma + Lugar (4 cartas)',
+                         v12=True, reconversion=True, complice_def='tres'),
+    'V1.2.2+TestDecl': dict(nombre='V1.2.2 Testigo c/Decl.',
+                            descripcion='Testigo vuelve a pedir Declaración',
+                            v12=True, reconversion=True, testigo_def='con_decl'),
+    'V1.2.2+CazSalva': dict(nombre='V1.2.2 Cazador salva',
+                            descripcion='Cazador vuelve a dar supervivencia si eres Nadie',
+                            v12=True, reconversion=True, cazador_salva=True),
+    'V1.3 candidata': dict(nombre='V1.3 candidata',
+                           descripcion='V1.2.2 + Cómplice con Asesino + Cazador salva',
+                           v12=True, reconversion=True, complice_def='con_asesino',
+                           cazador_salva=True),
     'V1.1': dict(nombre='V1.1 propuesta',
                  descripcion='Mercado de 2 + Detective con 2 tipos + 6 Declaraciones + '
                              'Contra-acusación que bloquea + 2 puntos por sobrevivir sin revelarse',
@@ -185,18 +212,63 @@ MESAS = {
 # ============================================================
 _FILL = {}
 DET_TIPOS = [3]   # se fija por partida según las reglas
+V12 = [False]     # True = requisitos de identidad del Reglamento V1.2.2
+MODOS = {'complice': 'v12', 'testigo': 'v12'}   # variantes de identidad sobre V1.2.2
+
+# V1.2.2: Asesino 4 Escenas; Testigo = Asesino + Lugar + Testigo; Cómplice = Cómplice +
+# 2 de {Asesino, Arma, Lugar}; Detective = 2 Evidencias de tipos distintos + Declaración.
+DEFS_V10 = {'asesino': ((CH, WE, VI, RO),), 'complice': ((CH, WE, RO, CO),),
+            'testigo': ((CH, RO, TE, DE),)}
+DEFS_V12 = {'asesino': ((CH, WE, VI, RO),),
+            'complice': ((CO, CH, WE), (CO, CH, RO), (CO, WE, RO)),
+            'testigo': ((CH, RO, TE),)}
+
+
+def defs():
+    if not V12[0]:
+        return DEFS_V10
+    d = dict(DEFS_V12)
+    if MODOS['complice'] == 'con_asesino':      # las 2 Escenas deben incluir el Asesino
+        d['complice'] = ((CO, CH, WE), (CO, CH, RO))
+    elif MODOS['complice'] == 'tres':           # Cómplice + Asesino + Arma + Lugar
+        d['complice'] = ((CO, CH, WE, RO),)
+    if MODOS['testigo'] == 'con_decl':          # Testigo + Declaración (como V1.0)
+        d['testigo'] = ((CH, RO, TE, DE),)
+    return d
+
+
+def det_req():
+    """(nº de Evidencias, tipos distintos mínimos) que pide Detective."""
+    return (2, 2) if V12[0] else (3, DET_TIPOS[0])
+
+
+def util_mask(ident):
+    if ident == 'detective':
+        return EV_ALL | DE
+    m = 0
+    for alt in defs()[ident]:
+        for s in alt:
+            m |= s
+    return m
+
+
+def tam_ident(ident):
+    if ident == 'detective':
+        return det_req()[0] + 1
+    return len(defs()[ident][0])
 
 
 def rellenar(masks, ident, relajado=False):
     """Devuelve (huecos_cubiertos, tupla_de_huecos_que_faltan) para la mejor
     asignación carta→hueco. Con relajado=True una carta puede cubrir varios
     huecos (el error típico de novato)."""
-    key = (masks, ident, relajado, DET_TIPOS[0])
+    key = (masks, ident, relajado, DET_TIPOS[0], V12[0], MODOS['complice'], MODOS['testigo'])
     r = _FILL.get(key)
     if r is not None:
         return r
     if ident == 'detective':
-        # 3 Evidencias compatibles con al menos DET_TIPOS tipos distintos + Declaración
+        # n_req Evidencias compatibles con al menos k tipos distintos + Declaración
+        n_req, k = det_req()
         have, decl, n_ev = 0, False, 0
         for m in masks:
             if m & EV_ALL:
@@ -204,37 +276,42 @@ def rellenar(masks, ident, relajado=False):
             have |= m & EV_ALL
             decl = decl or bool(m & DE)
         tipos = popcount(have)
-        k = DET_TIPOS[0]
-        cubiertas = min(3, n_ev, tipos + (3 - k))
+        cubiertas = min(n_req, n_ev, tipos + (n_req - k))
         nuevas = max(0, k - tipos)
-        falta = [EV_ALL & ~have] * nuevas + [EV_ALL] * (3 - cubiertas - nuevas)
+        falta = [EV_ALL & ~have] * nuevas + [EV_ALL] * max(0, n_req - cubiertas - nuevas)
         if not decl:
             falta.append(DE)
-        r = (4 - len(falta), tuple(falta))
+        r = (n_req + 1 - len(falta), tuple(falta))
     else:
-        slots = HUECOS[ident]
-        union = slots[0] | slots[1] | slots[2] | slots[3]
-        if relajado:
-            falta = tuple(s for s in slots if not any(m & s for m in masks))
-        else:
-            cand = [m for m in masks if m & union]
-            best = [None]
+        mejor = None
+        for slots in defs()[ident]:
+            L = len(slots)
+            if relajado:
+                falta = tuple(x for x in slots if not any(m & x for m in masks))
+            else:
+                union = 0
+                for x in slots:
+                    union |= x
+                cand = [m for m in masks if m & union]
+                best = [None]
 
-            def rec(j, usado, falta_):
-                if best[0] is not None and len(falta_) >= len(best[0]):
-                    return
-                if j == 4:
-                    best[0] = tuple(falta_)
-                    return
-                s = slots[j]
-                for i, m in enumerate(cand):
-                    if not (usado >> i) & 1 and m & s:
-                        rec(j + 1, usado | (1 << i), falta_)
-                rec(j + 1, usado, falta_ + [s])
+                def rec(j, usado, falta_):
+                    if best[0] is not None and len(falta_) >= len(best[0]):
+                        return
+                    if j == L:
+                        best[0] = tuple(falta_)
+                        return
+                    sl = slots[j]
+                    for i, m in enumerate(cand):
+                        if not (usado >> i) & 1 and m & sl:
+                            rec(j + 1, usado | (1 << i), falta_)
+                    rec(j + 1, usado, falta_ + [sl])
 
-            rec(0, 0, [])
-            falta = best[0]
-        r = (4 - len(falta), falta)
+                rec(0, 0, [])
+                falta = best[0]
+            if mejor is None or len(falta) < len(mejor[1]):
+                mejor = (L - len(falta), falta)
+        r = mejor
     _FILL[key] = r
     return r
 
@@ -290,6 +367,9 @@ class Jugador:
         self.ruido = (1 - self.p['habilidad']) * 0.12
         self._outs = {}
         self.w = {i: 1 + self.p['codicia'] * (PUNTOS[i] - 4.5) / 12 for i in IDENTIDADES}
+        if V12[0]:                  # Modo Normal: sin puntos, toda identidad vale lo mismo
+            self.w = {i: 1.0 for i in IDENTIDADES}
+        self.reconv = False
         self.estr = None            # estrategia fija (auditoría de estrategias dominantes)
         self.asiento = None
 
@@ -389,12 +469,14 @@ class Jugador:
         """Estimación humana de que j PUEDA formar `ident` ahora mismo."""
         # Lo que cree saber (puede incluir cartas que ya no tiene: memoria falible)
         conocidas = [c for c in self.conoce[j.id] if c in j.mano or self.rng.random() < .3][-4:]
-        util = HUECOS[ident][0] | HUECOS[ident][1] | HUECOS[ident][2] | HUECOS[ident][3]
+        util = util_mask(ident)
         basura = sum(1 for c in conocidas if not g.mask[c] & util)
+        if tam_ident(ident) < g.R['mano']:
+            basura = max(0, basura - (g.R['mano'] - tam_ident(ident)))   # 4.ª carta libre
         f, _ = rellenar(tuple(sorted(g.mask[c] for c in conocidas)), ident)
         # Intuición de mesa: ~1 de cada 4-5 jugadores que siguen ocultos en
         # Sospecha "va de algo"; cada pieza útil vista la hace más creíble.
-        previa = 0.22 if ident == 'asesino' else 0.12
+        previa = 0.22 if ident == 'asesino' else (0.25 if V12[0] else 0.12)
         odds = previa / (1 - previa) * (2.6 ** f)
         if basura and len(j.mano) <= g.R['mano']:
             # Con 4 cartas no cabe basura: el que calcula lo descarta; el novato no lo ve.
@@ -422,6 +504,9 @@ class Partida:
     def __init__(self, R, n, rng, mesa='mixta', cronica=False):
         self.R = R
         DET_TIPOS[0] = R['det_tipos']
+        V12[0] = R['v12']
+        MODOS['complice'] = R['complice_def']
+        MODOS['testigo'] = R['testigo_def']
         self.rng = rng
         self.cronica = cronica
         self.log = []
@@ -495,8 +580,10 @@ class Partida:
                 return None
             top = self.descarte.pop()
             self.mazo = self.descarte
+            if self.R['v12']:           # §16 V1.2.2: se baraja todo el descarte
+                self.mazo.append(top)
             self.rng.shuffle(self.mazo)
-            self.descarte = [top]
+            self.descarte = [] if self.R['v12'] else [top]
             for j in self.jug:          # vuelve al mazo: ya no se "sabe" dónde están
                 for c in self.mazo:
                     if c not in j.mano:
@@ -534,7 +621,9 @@ class Partida:
             if mejor is None or v > mejor[0]:
                 mejor = (v, c)
         umbral = 0.015 + j.rng.gauss(0, j.ruido)
-        if mejor and mejor[0] > v_ciego + umbral:
+        if self.quiere_reconvertir(j, mejor, D):
+            self.reconversion(j, D)
+        elif mejor and mejor[0] > v_ciego + umbral:
             c = mejor[1]
             self.descarte.remove(c)
             j.mano.append(c)
@@ -560,6 +649,51 @@ class Partida:
 
         # 3 · DESCARTAR
         self.fin_turno(j, D)
+
+    # ---------- Reconversión (V1.2.2 §11) ----------
+    def quiere_reconvertir(self, j, mejor, D):
+        R = self.R
+        if not R['reconversion'] or j.reconv or j.estado == 'revelado':
+            return False
+        if self.ronda <= R['construccion'] or j.estr == 'nunca_reconvierte':
+            return False
+        if j.cree_identidad(self):
+            return False
+        if mejor and mejor[0] >= 1.0:          # el descarte ya me completa
+            return False
+        if j.estado in ('bloqueado', 'nadie'):
+            return j.rng.random() < 0.3
+        if j.estr == 'reconvierte_ya':
+            return True
+        ultima = self.ronda == R['construccion'] + R['sospecha']
+        p = 0.9 if ultima else 0.35 + 0.5 * j.p['habilidad']
+        return j.rng.random() < p
+
+    def reconversion(self, j, D):
+        j.reconv = True
+        self.ev['reconversion'] += 1
+        self.tiempo += 12
+        # 1) descarta 1 boca arriba (la que menos falta le hace)
+        fuera = None
+        if j.mano:      # con la mano vacía no hay nada que descartar (hueco de reglas)
+            fuera = max(j.mano, key=lambda c: j.valor([x for x in j.mano if x != c], D + 2, self)[0])
+            self.descartar(j, fuera)
+        else:
+            self.ev['reconversion_mano_vacia'] += 1
+        # 2) roba 2
+        for _ in range(2):
+            c = self.robar_mazo()
+            if c is not None:
+                j.mano.append(c)
+                j.ver(c)
+        # 3) vuelve a 4
+        if len(j.mano) > self.R['mano']:
+            _, keep, sobran, _ = j.mejor_mano(j.mano, D, self)
+            for c in sobran:
+                self.descartar(j, c)
+        j.reconv_identidad = identidad_real(tuple(sorted(self.mask[c] for c in j.mano))) != 'nadie'
+        self.say(f"  J{j.id} ({j.perfil}) RECONVIERTE: descarta {self.nombre(fuera) if fuera is not None else 'nada'} y roba 2"
+                 + (" → ¡completa identidad!" if j.reconv_identidad else ""))
 
     def fin_turno(self, j, D):
         if len(j.mano) > self.R['mano']:
@@ -684,6 +818,7 @@ class Partida:
                     break
         # --- REVELAR ---
         if cree:
+            j.pudo_revelar = True
             ultima = self.ronda == R['construccion'] + R['sospecha']
             amenazado = cree in ('asesino', 'complice') or cree in ('testigo',)
             prud = j.p['prudencia']
@@ -719,8 +854,8 @@ class Partida:
             for c in j.mano:
                 o.ver(c)
         if ident == 'nadie':
-            j.estado = 'nadie'
-            j.identidad_final = 'nadie'
+            j.estado = 'bloqueado' if self.R['v12'] else 'nadie'
+            j.identidad_final = j.estado
             self.ev['revelacion_falsa'] += 1
             self.say(f"  J{j.id} ({j.perfil}) dice «YO SOY…» ¡pero su mano no vale! → NADIE")
         else:
@@ -741,7 +876,12 @@ class Partida:
         mi_v, _, _, _ = j.mejor_mano(j.mano, D, self, ruido=False)
         mi_surv = 1.0 if tengo else min(1.0, mi_v)
         ultima = self.ronda == self.R['construccion'] + self.R['sospecha']
-        if j.acusacion == 'formal':
+        if self.R['v12'] and not self.R['cazador_salva'] and j.acusacion == 'formal':
+            # Cazador ya no da supervivencia: es solo reconocimiento (+ quitarle la
+            # victoria a otro, que en Modo Normal no te beneficia directamente).
+            ganancia = self.R['valor_cazador'] * (0.6 + 0.8 * j.p['codicia']) + 0.05 * j.p['agresividad']
+            perdida = mi_surv * (0.8 if not ultima else 0.95) + 0.03
+        elif j.acusacion == 'formal':
             ganancia = (1 - mi_surv) * 1.0 + 0.3 * j.p['codicia'] + 0.1
             perdida = mi_surv * (0.75 if not ultima else 0.95) + 0.1 * j.p['codicia']
         else:
@@ -761,12 +901,9 @@ class Partida:
         self.tiempo += 35
         tipo_txt = 'Formal' if tipo == 'formal' else 'de Cómplice'
         masks_t = tuple(sorted(self.mask[c] for c in t.mano))
-        if tipo == 'formal':
-            acierto = any(not rellenar(tuple(sorted(s)), 'asesino')[1]
-                          for s in combinations(masks_t, 4)) if len(masks_t) >= 4 else False
-        else:
-            acierto = any(not rellenar(tuple(sorted(s)), 'complice')[1]
-                          for s in combinations(masks_t, 4)) if len(masks_t) >= 4 else False
+        acierto = not rellenar(masks_t, 'asesino' if tipo == 'formal' else 'complice')[1]
+        if R['v12']:
+            return self.acusar_v12(j, t, tipo, acierto, D, tipo_txt)
         j.acusacion = None
         # comprobación privada: el acusador ve la mano
         for x in t.mano:
@@ -819,6 +956,68 @@ class Partida:
                     j.cazador_ok = False
             self.say(f"  J{j.id} ({j.perfil}) ACUSA {tipo_txt} a J{t.id}: falla"
                      + (" y le responden con Contra-acusación" if contra else ""))
+        return True
+
+    def acusar_v12(self, j, t, tipo, acierto, D, tipo_txt):
+        """Reglamento V1.2.2 §13."""
+        R = self.R
+        j.acusacion = None
+        for x in t.mano:                       # verificación privada
+            j.conoce[t.id].add(x)
+            j.ver(x)
+        # Contra-acusación: reacción antes de mostrar la mano. El acusado conoce su mano;
+        # si la acusación es cierta ya va a quedar Bloqueado, así que el descarte extra
+        # apenas le cuesta: la juega casi siempre.
+        contra = False
+        if t.acusacion == 'contra':
+            if not acierto or t.estr == 'contra_siempre' or j.rng.random() < R['contra_si_culpable']:
+                contra = True
+                t.acusacion = None
+                self.ev['contra_usada'] += 1
+                self.ev['contra_usada_' + ('culpable' if acierto else 'inocente')] += 1
+        mult = 2 if contra else 1
+        self.ev[f'acusa_{tipo}'] += 1
+        if acierto:
+            self.ev[f'acusa_{tipo}_exito'] += 1
+            t.estado = 'bloqueado'
+            t.identidad_final = 'bloqueado'
+            if tipo == 'formal':
+                if t.mano:
+                    self.descartar(t, self.rng.choice(t.mano))
+                c = self.robar_mazo()
+                if c is not None:
+                    j.mano.append(c)
+                    j.ver(c)
+                j.cazador_ok = True
+            else:
+                cs = [x for x in t.mano if self.kind(x) == 'complice']
+                if cs:
+                    self.descartar(t, cs[0])
+            if contra and t.mano:
+                self.descartar(t, self.rng.choice(t.mano))
+            self.say(f"  J{j.id} ({j.perfil}) ACUSA {tipo_txt} a J{t.id}: ¡ACIERTA! J{t.id} BLOQUEADO"
+                     + (" (jugó Contra-acusación en vano)" if contra else ""))
+        else:
+            self.ev[f'acusa_{tipo}_fallo'] += 1
+            if tipo == 'formal':
+                for _ in range(min(R['fallo_formal'] * mult, len(j.mano))):
+                    self.descartar(j, self.rng.choice(j.mano))
+            else:
+                for _ in range(min(mult, len(j.mano))):
+                    _, keep, fuera, _ = j.mejor_mano(j.mano, D, self)
+                    self.descartar(j, fuera[0] if fuera else min(
+                        j.mano, key=lambda c: popcount(self.mask[c])))
+            if tipo == 'formal' or contra:
+                c = self.robar_mazo()
+                if c is not None:
+                    t.mano.append(c)
+                    t.ver(c)
+                if len(t.mano) > R['mano']:      # límite de mano inmediato
+                    _, keep, fuera, _ = t.mejor_mano(t.mano, D, self)
+                    for c in fuera:
+                        self.descartar(t, c)
+            self.say(f"  J{j.id} ({j.perfil}) ACUSA {tipo_txt} a J{t.id}: falla"
+                     + (" ¡y recibe Contra-acusación (penalización doble)!" if contra else ""))
         return True
 
     # ---------- partida ----------
@@ -884,7 +1083,7 @@ class Partida:
         for j in self.jug:
             if j.estado == 'activo':
                 ident = mejor_identidad_de([self.mask[c] for c in j.mano], tam)
-                if ident == 'nadie' and j.cazador_ok:
+                if ident == 'nadie' and j.cazador_ok and (not R['v12'] or R['cazador_salva']):
                     ident = 'cazador'
                 j.identidad_final = ident
                 if ident not in ('nadie', 'cazador'):
@@ -910,6 +1109,8 @@ def jugar_partida(args):
         j0.malentiende = False
         j0.estr = estr[0]
         j0.w = {i: 1 + j0.p['codicia'] * (PUNTOS[i] - 4.5) / 12 for i in IDENTIDADES}
+        if R['v12']:
+            j0.w = {i: 1.0 for i in IDENTIDADES}
         if estr[0].startswith('solo_'):
             j0.w = {i: (1.0 if i == estr[0][5:] else 0.0) for i in IDENTIDADES}
     res = g.jugar()
@@ -926,7 +1127,9 @@ def jugar_partida(args):
             else:
                 faltan = faltan_min(tuple(sorted(masks))) + (tam - len(masks))
         pts = 0 if ident == 'bloqueado' else PUNTOS[ident] + j.bonus
-        filas.append(dict(id=j.id, asiento=j.asiento, revelo=j.revelo_ronda, perfil=j.perfil, ident=ident, sobrevive=sobrevive, faltan=faltan,
+        caz = (ident == 'cazador') or j.cazador_ok if R['v12'] else (ident == 'cazador')
+        filas.append(dict(pudo=getattr(j, 'pudo_revelar', False), cazador=caz, reconv=j.reconv,
+                          reconv_ok=getattr(j, 'reconv_identidad', False), id=j.id, asiento=j.asiento, revelo=j.revelo_ronda, perfil=j.perfil, ident=ident, sobrevive=sobrevive, faltan=faltan,
                           cambios=j.cambios, tensa=j.decision_tensa, perdio=j.perdio_identidad,
                           inicio=g.inicio[j.id], puntos=pts, malentiende=j.malentiende))
     return dict(filas=filas, ev=dict(g.ev), tiempo=g.tiempo)
@@ -990,7 +1193,10 @@ def resumir(out, n, partidas):
         tomas=ev['toma_descarte'] / partidas,
         revelaciones=ev['revela'] / partidas,
         falsas=ev['revelacion_falsa'] / partidas,
-        cazador_partidas=sum(1 for o in out if any(f['ident'] == 'cazador' for f in o['filas'])) / partidas,
+        cazador_partidas=sum(1 for o in out if any(f['cazador'] for f in o['filas'])) / partidas,
+        reconversiones=ev['reconversion'] / partidas,
+        reconv_salva=(sum(1 for f in filas if f['reconv'] and f['reconv_ok'])
+                      / max(1, sum(1 for f in filas if f['reconv']))),
         contra_usada=ev['contra_usada'] / partidas,
         destruidas=ev['identidad_destruida'] / partidas,
         minutos=statistics.mean(o['tiempo'] for o in out) / 60,
