@@ -9,6 +9,7 @@ estándar de Python 3.8+.
 ```bash
 python3 asesino.py                              # informe V1.0 con 4, 6 y 8 jugadores
 python3 asesino.py --variante V1.1              # informe de la propuesta V1.1
+python3 asesino.py --variante V1.2.2            # Reglamento consolidado V1.2.2 (Modo Normal)
 python3 asesino.py --comparar                   # tabla con todas las variantes
 python3 asesino.py --mesa familia               # mesa de familia (o: jugones, mixta)
 python3 asesino.py --jugadores 5 --partidas 5000
@@ -29,6 +30,8 @@ Para añadir una variante, añade una entrada a `VARIANTES` con los parámetros 
 ```bash
 python3 auditoria.py                 # componentes, asientos, estrategias, puntuación y robustez
 python3 auditoria.py --solo estrategias --partidas 2000
+python3 auditoria.py --variantes V1.2.2 --solo estrategias
+python3 auditoria.py --solo robustez_v12
 ```
 
 Resultados en `resultados/auditoria.txt` y conclusiones en `../AUDITORIA.md`.

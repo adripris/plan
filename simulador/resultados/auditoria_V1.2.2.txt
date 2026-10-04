@@ -33,3 +33,30 @@ Jugador 0 = perfil calculador con estrategia fija; resto de la mesa mixta. Δ = 
 | Estrategia | Sobrevive | Δ | Puntos | Δ |
 |---|---|---|---|---|
 | juega normal (referencia) |  89.9% | +0.0 | 3.68 | +0.00 |
+| solo persigue Asesino |  66.0% | -23.9 | 3.27 | -0.42 |
+| solo persigue Cómplice |  81.1% | -8.8 | 2.69 | -0.99 |
+| solo persigue Testigo |  74.2% | -15.6 | 3.12 | -0.56 |
+| solo persigue Detective |  56.0% | -33.9 | 3.26 | -0.43 |
+| nunca juega especiales (los guarda) |  90.6% | +0.7 | 3.60 | -0.08 |
+| juega cada especial en cuanto lo roba |  68.8% | -21.1 | 3.31 | -0.38 |
+| nunca suelta cartas del crimen (negar al rival) |  87.4% | -2.5 | 3.76 | +0.08 |
+| se revela en cuanto puede |  92.1% | +2.2 | 3.73 | +0.04 |
+| nunca se revela (espera a la Forzada) |  86.5% | -3.4 | 3.61 | -0.07 |
+| nunca acusa |  90.5% | +0.6 | 3.70 | +0.02 |
+| acusa siempre en Sospecha |  80.3% | -9.6 | 3.23 | -0.45 |
+| nunca usa Reconversión |  88.2% | -1.7 | 3.61 | -0.07 |
+| reconvierte en la ronda 9 si no tiene identidad |  89.4% | -0.4 | 3.67 | -0.02 |
+
+
+## 5b. Robustez de V1.2.2 (Nadie y Cómplice con distintos supuestos humanos)
+
+| Supuesto humano | Nadie 4j | Nadie 8j | Cómplice 6j | Acusaciones 6j |
+|---|---|---|---|---|
+| base | 0.52 | 1.29 | 34.5% | 0.22 |
+| más hábiles (+0.25) | 0.48 | 1.13 | 34.1% | 0.13 |
+| menos hábiles (−0.25) | 0.68 | 1.61 | 34.3% | 0.34 |
+| sin lectura de mesa | 0.54 | 1.23 | 33.5% | 0.23 |
+| peor memoria (−0.3) | 0.52 | 1.19 | 34.0% | 0.15 |
+| sin errores de regla | 0.49 | 1.23 | 34.1% | 0.22 |
+| Cazador vale 0 (solo orgullo) | 0.49 | 1.16 | 34.6% | 0.07 |
+| Cazador vale mucho (1.0) | 0.66 | 1.67 | 33.4% | 0.70 |

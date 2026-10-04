@@ -160,7 +160,47 @@ Además, con 0,02–0,07 usos por partida **no se va a ver en el playtest** (ver
 
 ## 5. Estrategias dominantes / explotables
 
-*(se completa con la batería de estrategias más abajo)*
+Prueba: un jugador calculador con una estrategia fija, frente al mismo jugador jugando con
+normalidad, durante 2.500 partidas. La diferencia está en puntos de supervivencia; ±2 puntos es
+ruido. En `resultados/auditoria_V1.2.2.txt` también aparece una columna de puntos, pero en Modo
+Normal no se aplica.
+
+| Estrategia | 4 jug. | 6 jug. | Lectura |
+|---|---|---|---|
+| Juega normal (referencia) | 91,0% | 89,9% | — |
+| **Solo Detective** | **−35,0** | **−33,9** | Detective solo funciona como pivote, nunca como plan. Encaja con el riesgo del Dossier («difícil de reconocer»). |
+| **Solo Asesino** | **−23,7** | **−23,9** | Empeñarse en ser Asesino es lo peor después de Detective. |
+| Solo Testigo | −15,7 | −15,6 | — |
+| Solo Cómplice | −9,3 | −8,8 | La identidad dominante también castiga la terquedad. ✅ Pivotar es la clave: la «regla de oro» se cumple. |
+| Juega cada especial al robarlo | −21,7 | −21,1 | Usar especiales sin criterio se castiga. ✅ |
+| Nunca juega especiales | +0,4 | +0,7 | 🟠 Usar especiales no aporta nada a quien los juega (ver abajo). |
+| Acapara cartas del crimen | −1,9 | −2,5 | La negación no compensa. ✅ |
+| Se revela en cuanto puede | +1,5 | +2,2 | 🟠 Revelar sigue siendo algo mejor y **no cuesta nada** (ver abajo). |
+| Nunca se revela | −3,6 | −3,4 | Esperar cuesta poco, porque casi nadie acusa. |
+| **Nunca acusa** | **−0,8** | **+0,6** | 🟠 **Acusar no aporta nada a tu supervivencia.** |
+| Acusa siempre | −11,7 | −9,6 | Acusar a ciegas se castiga. ✅ |
+| Nunca usa Reconversión | −1,3 | −1,7 | Reconversión ayuda poco. 🟡 |
+| Reconvierte en la ronda 9 | −0,4 | −0,4 | El momento de usarla da igual. |
+
+**Conclusiones:**
+
+1. **La «regla de oro» funciona:** cualquier plan rígido pierde entre 9 y 35 puntos frente a
+   adaptarse. Es la mejor noticia de la versión.
+2. **El dilema «seguridad frente a ambición» no existe en Modo Normal.**
+   - Fijar identidad renuncia a «mejorar», pero sin puntos todas las identidades valen lo mismo.
+     No hay nada que mejorar.
+   - Esperar solo arriesga a sufrir una acusación, y apenas hay acusaciones.
+   - Resultado: revelar y esperar dan casi lo mismo (diferencia de unos 5 puntos). La decisión
+     existe, pero pesa poco.
+   - Para que pese, seguir oculto tiene que dar algo que no sean puntos. Por ejemplo: **solo quien
+     sigue oculto puede acusar en la ronda 10**, o **quien fija identidad entrega su Acusación al
+     jugador de su izquierda**.
+3. **Las acusaciones son decorativas para quien las hace.** No acusar nunca no cambia tu
+   supervivencia. Con Cazador sin efecto, acusar es altruismo o venganza.
+4. **Los Especiales son «take-that» sin retorno:** guardarlos rinde igual que usarlos con
+   criterio. Su valor está en la identidad que forman, no en la acción. Se puede aceptar, pero
+   entonces el dilema que anuncia §10 («usar puede destruir tu ruta») casi nunca se resuelve a
+   favor de usar.
 
 ## 6. Variantes de una sola variable (2.000 partidas por fila)
 
@@ -230,8 +270,63 @@ acusaciones en una tarde.
 
 ## 9. Robustez
 
-*(se completa más abajo)*
+Las conclusiones de V1.2.2 se mantienen con todos los supuestos humanos probados:
+
+| Supuesto humano | Nadie 4j | Nadie 8j | Cómplice (6j) | Acusaciones (6j) |
+|---|---|---|---|---|
+| Base | 0,52 | 1,29 | 34,5% | 0,22 |
+| Más hábiles | 0,48 | 1,13 | 34,1% | 0,13 |
+| Menos hábiles | 0,68 | 1,61 | 34,3% | 0,34 |
+| Sin lectura de mesa | 0,54 | 1,23 | 33,5% | 0,23 |
+| Peor memoria | 0,52 | 1,19 | 34,0% | 0,15 |
+| Sin errores de regla | 0,49 | 1,23 | 34,1% | 0,22 |
+| Cazador no vale nada | 0,49 | 1,16 | 34,6% | 0,07 |
+| Cazador vale tanto como sobrevivir | 0,66 | 1,67 | 33,4% | 0,70 |
+
+- **Cómplice ≈ 34% en todos los casos:** es estructural, no un artefacto del modelo.
+- **Lo único que mueve las acusaciones es cuánto valoran los humanos el reconocimiento Cazador.**
+  Merece una pregunta en el cuestionario: «¿te importaba conseguir Cazador?».
+
+**Auditoría del simulador:**
+
+- Hay comprobación de que ninguna carta se duplica ni se pierde en V1.0, V1.1 y V1.2.2.
+- Las identidades V1.2.2 están verificadas con casos unitarios:
+  - Testigo de 3 cartas.
+  - Cómplice con 2 de {Asesino, Arma, Lugar}; una Escena doble no cuenta dos veces.
+  - Detective con 2 Huellas no vale.
+  - Testigo + Cómplice a la vez cuenta como Testigo.
+- La simulación encontró el caso de la mano vacía (§2.2).
 
 ## 10. Plan de acción
 
-*(se completa más abajo)*
+**Antes de imprimir el kit**
+
+1. 🔴 Reescribir el orden del turno para Revelar y el alcance del límite de mano (§2.1).
+2. 🟠 Cerrar los huecos de §2.2:
+   - Anunciar una identidad inferior.
+   - La Acusación de Cómplice contra una mano que es Testigo y Cómplice.
+   - Si quien fija identidad sigue jugando y si se le puede robar.
+   - El «tú robas 1» de la Contra-acusación.
+   - Mano vacía.
+   - Los segundos del Testigo.
+3. 🔴 Completar el listado maestro de las 72 Escenas, con entre 7 y 12 Escenas dobles por Crimen.
+
+**Durante el playtest (sin tocar la V1.2.2)**
+
+4. 🔴 Añadir escenarios guiados de ronda 9 para medir acusaciones y Contra-acusación. Con
+   partidas normales no habrá datos.
+5. 🟠 Vigilar en el bloque B **cuántas partidas acaban sin ningún Nadie**. Si pasa en más de la
+   mitad con 4 jugadores, la tensión de Nadie no existe.
+6. 🟠 Añadir al cuestionario: «¿te importaba conseguir Cazador?» y «¿por qué no acusaste?».
+7. 🟡 Añadir a la hoja de registro el asiento de cada jugador y las cartas que le faltaban a cada
+   Nadie.
+
+**Candidatos para V1.3** (una variable por serie, como pide el Dossier)
+
+- **Serie 1:** Cómplice = Cómplice + Asesino + Arma + Lugar. Es la palanca más fuerte: Nadie
+  vuelve a ~1 / 2–3, Cómplice baja del 34% al 14% y Asesino pasa a ser la identidad principal.
+- **Serie 2:** Cazador salva a un Nadie. Duplica las acusaciones sin cambiar la supervivencia.
+- **Serie 3:** Contra-acusación con coste real si eres culpable (por ejemplo, pierdes tu Cazador
+  y el acusador roba 2).
+- **Serie 4:** una ventaja no numérica para seguir oculto (por ejemplo, solo quien no ha fijado
+  identidad puede acusar en la ronda 10).
